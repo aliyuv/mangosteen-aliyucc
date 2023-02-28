@@ -1,11 +1,5 @@
 import { defineStore } from 'pinia'
 import { http } from '../shared/Http'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
 
 type State = {
   items: Item[]
@@ -32,8 +26,8 @@ export const useItemStore = (id: string | (string | undefined)[]) =>
         const response = await http.get<Rescources<Item>>(
           '/items',
           {
-            happen_after: dayjs(startDate).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss'),
-            happen_before: dayjs(endDate).tz('Asia/Shanghai').add(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
+            happen_after: startDate,
+            happen_before: endDate,
             page: firstPage ? 1 : this.page + 1
           },
           {
