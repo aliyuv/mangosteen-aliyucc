@@ -13,7 +13,7 @@
 ````
 # 代码规范
 
-``` tsx
+```
 const refMain = ref<HTMLElement | null>(null)
 ````
 
