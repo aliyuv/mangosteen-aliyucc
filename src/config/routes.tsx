@@ -26,6 +26,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: '/items',
+    meta: { fromOtherPage: true },
     component: () => import('../views/ItemPage'),
     children: [
       { path: '', component: ItemList },
@@ -46,6 +47,7 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: '/statistics',
+    meta: { fromOtherPage: true },
     component: () => import('../views/StatisticsPage')
   },
   {
