@@ -1,9 +1,12 @@
 import { Dialog } from 'vant'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useMeStore } from '../stores/useMeStore'
 import { Icon } from './Icon'
 import s from './Overlay.module.scss'
+interface RouteMap {
+  [key: string]: string;
+}
 export const Overlay = defineComponent({
   props: {
     onClose: {
@@ -11,13 +14,41 @@ export const Overlay = defineComponent({
     }
   },
   setup(props, context) {
+    const route = useRoute()
+    const me = ref<User>()
     const meStore = useMeStore()
+    const lastClickTime = ref(0);
+    const router = useRouter();
+    const isAlreadyPrompted = ref(false) // 用于判断是否已经弹出过提示
+    const routerMap: RouteMap = {
+      '/items': '/items',
+      '/statistics': '/statistics',
+    }
+    const onClickStartAccount = () => {
+      const now = new Date().getTime()
+      const isStartAccountPage = route.path === routerMap[route.path]
+      if (isStartAccountPage && now - lastClickTime.value < 5000) {
+        if (isAlreadyPrompted.value) {  // 判断是否已经弹出过提示
+          router.push(routerMap[route.path])
+          return
+        }
+        Dialog.alert({
+          title: "提示",
+          message: "已经是当前页面了"
+        }).then(() => {
+          isAlreadyPrompted.value = true  // 将其置为 true
+        })
+        return
+      }
+      lastClickTime.value = now
+      router.push(routerMap[route.path])
+    }
+
     const close = () => {
       props.onClose?.()
       // context.emit("close") // 这里的close是父组件 onclose的函数
     }
-    const route = useRoute()
-    const me = ref<User>()
+
     onMounted(async () => {
       const response = await meStore.mePromise
       me.value = response?.data.resource
@@ -49,13 +80,13 @@ export const Overlay = defineComponent({
           </section>
           <nav>
             <ul class={s.action_list}>
-              <li>
+              <li onClick={onClickStartAccount}>
                 <RouterLink to="/items" class={s.action} exactActiveClass={s.exactActiveClass}>
                   <Icon name="pig" class={s.icon} />
                   <span>开始记账</span>
                 </RouterLink>
               </li>
-              <li>
+              <li onClick={onClickStartAccount}>
                 <RouterLink to="/statistics" class={s.action} exactActiveClass={s.exactActiveClass}>
                   <Icon name="chart" class={s.icon} />
                   <span>统计图表</span>
