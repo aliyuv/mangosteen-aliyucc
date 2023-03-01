@@ -5,6 +5,7 @@ specifiers:
   '@vitejs/plugin-vue': 3.0.0
   '@vitejs/plugin-vue-jsx': 2.0.0
   axios: 0.27.2
+  dayjs: ^1.11.7
   echarts: 5.3.2
   pinia: 2.0.16
   prettier: 2.7.1
@@ -12,6 +13,7 @@ specifiers:
   svgo: 2.8.0
   svgstore: 3.0.1
   typescript: 4.6.3
+  utc: link:dayjs/plugin/utc
   vant: 3.4.8
   vh-check: 2.0.5
   vite: 3.0.0
@@ -23,11 +25,13 @@ specifiers:
 dependencies:
   '@faker-js/faker': 7.3.0
   axios: 0.27.2
+  dayjs: 1.11.7
   echarts: 5.3.2
   pinia: 2.0.16_hhks2xcoho7x4jrwn5stbz36vy
   sass: 1.49.11
   svgo: 2.8.0
   svgstore: 3.0.1
+  utc: link:dayjs/plugin/utc
   vant: 3.4.8_vue@3.2.31
   vh-check: 2.0.5
   vue: 3.2.31
@@ -902,6 +906,10 @@ packages:
 
   /csstype/2.6.21:
     resolution: {integrity: sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==}
+
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
+    dev: false
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}

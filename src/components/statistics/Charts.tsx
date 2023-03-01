@@ -5,7 +5,9 @@ import { LineChart } from './LineChart'
 import { PieChart } from './PieChart'
 import { Bars } from './Bars'
 import { http } from '../../shared/Http'
-
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 type Data1Item = { happen_at: string; amount: number }
 type Data1 = Data1Item[]
 type Data2Item = { tag_id: number; tag: Tag; amount: number }
@@ -76,7 +78,6 @@ export const Charts = defineComponent({
         percent: Math.round((item.amount / total) * 100)
       }))
     })
-    console.log(betterData3.value)
     const fetchData2 = async () => {
       const response = await http.get<{ groups: Data2; summary: number }>(
         '/items/summary',
