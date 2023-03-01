@@ -4,8 +4,11 @@ import { Form, FormItem } from '../shared/Form'
 import { OverlayIcon } from '../shared/Overlay'
 import { Tab, Tabs } from '../shared/Tabs'
 import { Time } from '../shared/time'
+import s from '../Layouts/TimeTabsLayOut.module.scss'
 import { MainLayout } from './MainLayout'
-import s from './TimeTabsLayOut.module.scss'
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 const demo = defineComponent({
   props: {
     startDate: {
@@ -18,7 +21,7 @@ const demo = defineComponent({
     }
   }
 })
-export const TimeTabsLayOut = defineComponent({
+export const TimeTabsLayout = defineComponent({
   props: {
     component: {
       type: Object as PropType<typeof demo>,
@@ -33,7 +36,7 @@ export const TimeTabsLayOut = defineComponent({
       default: false
     }
   },
-  setup(props, context) {
+  setup: (props, context) => {
     const refSelected = ref('本月')
     const time = new Time()
     const tempTime = reactive({
@@ -46,16 +49,16 @@ export const TimeTabsLayOut = defineComponent({
     }>({})
     const timeList = [
       {
-        start: time.firstDayOfMonth(),
-        end: time.lastDayOfMonth()
+        start: dayjs().startOf('month').toISOString(),
+        end: dayjs().endOf('month').toISOString()
       },
       {
-        start: time.add(-1, 'month').firstDayOfMonth(),
-        end: time.add(-1, 'month').lastDayOfMonth()
+        start: dayjs().subtract(1, 'month').startOf('month').toISOString(),
+        end: dayjs().subtract(1, 'month').endOf('month').toISOString()
       },
       {
-        start: time.firstDayOfYear(),
-        end: time.lastDayOfYear()
+        start: dayjs().startOf('year').toISOString(),
+        end: dayjs().endOf('year').toISOString()
       }
     ]
     const refOverlayVisible = ref(false)
@@ -83,13 +86,13 @@ export const TimeTabsLayOut = defineComponent({
                   onUpdate:selected={onSelect}
                   rerennderOnSwitchTab={props.rerenderOnSwitchTab}
                 >
-                  <Tab name="本月" value="本月">
-                    <props.component startDate={timeList[0].start.format()} endDate={timeList[0].end.format()} />
+                  <Tab value="本月" name="本月">
+                    <props.component startDate={timeList[0].start} endDate={timeList[0].end} />
                   </Tab>
-                  <Tab name="上月" value="上月">
-                    <props.component startDate={timeList[1].start.format()} endDate={timeList[1].end.format()} />
+                  <Tab value="上月" name="上月">
+                    <props.component startDate={timeList[1].start} endDate={timeList[1].end} />
                   </Tab>
-                  <Tab name="自定义时间" value="自定义时间">
+                  <Tab value="自定义时间" name="自定义时间">
                     <props.component startDate={customTime.start} endDate={customTime.end} />
                   </Tab>
                 </Tabs>
@@ -100,16 +103,16 @@ export const TimeTabsLayOut = defineComponent({
                   onUpdate:selected={onSelect}
                   rerennderOnSwitchTab={props.rerenderOnSwitchTab}
                 >
-                  <Tab name="本月" value="本月">
-                    <props.component startDate={timeList[0].start.format()} endDate={timeList[0].end.format()} />
+                  <Tab value="本月" name="本月">
+                    <props.component startDate={timeList[0].start} endDate={timeList[0].end} />
                   </Tab>
-                  <Tab name="上月" value="上月">
-                    <props.component startDate={timeList[1].start.format()} endDate={timeList[1].end.format()} />
+                  <Tab value="上月" name="上月">
+                    <props.component startDate={timeList[1].start} endDate={timeList[1].end} />
                   </Tab>
-                  <Tab name="今年" value="今年">
-                    <props.component startDate={timeList[2].start.format()} endDate={timeList[2].end.format()} />
+                  <Tab value="今年" name="今年">
+                    <props.component startDate={timeList[2].start} endDate={timeList[2].end} />
                   </Tab>
-                  <Tab name="自定义时间" value="自定义时间">
+                  <Tab value="自定义时间" name="自定义时间">
                     <props.component startDate={customTime.start} endDate={customTime.end} />
                   </Tab>
                 </Tabs>
@@ -140,3 +143,4 @@ export const TimeTabsLayOut = defineComponent({
     )
   }
 })
+export default TimeTabsLayout

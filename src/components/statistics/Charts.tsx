@@ -5,9 +5,6 @@ import { LineChart } from './LineChart'
 import { PieChart } from './PieChart'
 import { Bars } from './Bars'
 import { http } from '../../shared/Http'
-import { Time } from '../../shared/time'
-
-const DAY = 24 * 3600 * 1000
 
 type Data1Item = { happen_at: string; amount: number }
 type Data1 = Data1Item[]
@@ -24,39 +21,43 @@ export const Charts = defineComponent({
       required: false
     }
   },
-  setup: (props, context) => {
+  setup: (props) => {
     const kind = ref('expenses')
     const data1 = ref<Data1>([])
     const betterData1 = computed<[string, number][]>(() => {
       if (!props.startDate || !props.endDate) {
-        return []
+        return [];
       }
-      const diff = new Date(props.endDate).getTime() - new Date(props.startDate).getTime()
-      const n = diff / DAY + 1
-      return Array.from({ length: n }).map((_, i) => {
-        const time = new Time(`${props.startDate}T00:00:00.000+0800`).add(i, 'day').getTimestamp()
-        const item = data1.value[0]
-        // 服务器返回的数据就是按照 中国北京时区的，所以这里需要加上 8 小时
-        const amount =
-          item && new Date(item.happen_at + 'T00:00:00.000+0800').getTime() === time ? data1.value.shift()!.amount : 0
-        return [new Date(time).toISOString(), amount]
-      })
-    })
+      const DAY = 24 * 60 * 60 * 1000; // 一天的毫秒数
+      const startDate = dayjs(props.startDate).startOf('day').utcOffset(480); // 将起始日期转换为东八区时间
+      const endDate = dayjs(props.endDate).startOf('day').utcOffset(480); // 将结束日期转换为东八区时间
+      const diff = endDate.diff(startDate, 'millisecond'); // 计算日期范围的毫秒数
+      const n = Math.floor(diff / DAY) + 1; // 计算天数，向下取整
+      const data = [...data1.value]; // 复制数据数组，避免对原始数据进行修改
 
+      return Array.from({ length: n }).map((_, i) => {
+        const date = startDate.add(i, 'day'); // 计算当前日期
+        const item = data[0];
+        const amount = item && dayjs(item.happen_at).utcOffset(480).isSame(date, 'day') ? data.shift()!.amount : 0; // 判断当前日期是否有数据
+        return [date.toISOString(), amount];
+      });
+    });
     const fetchData1 = async () => {
       const response = await http.get<{ groups: Data1; summary: number }>(
         '/items/summary',
         {
-          happen_after: props.startDate,
-          happen_before: props.endDate,
+          happen_after: dayjs(props.startDate).startOf('day').toISOString(),
+          happen_before: dayjs(props.endDate).endOf('day').toISOString(),
           kind: kind.value,
           group_by: 'happen_at'
         },
-        { _mock: 'itemSummary' }
+        {
+          _mock: 'itemSummary',
+          _autoLoading: true
+        }
       )
       data1.value = response.data.groups
     }
-
     onMounted(fetchData1)
     watch(() => kind.value, fetchData1)
 
@@ -75,17 +76,19 @@ export const Charts = defineComponent({
         percent: Math.round((item.amount / total) * 100)
       }))
     })
-
+    console.log(betterData3.value)
     const fetchData2 = async () => {
       const response = await http.get<{ groups: Data2; summary: number }>(
         '/items/summary',
         {
-          happen_after: props.startDate,
-          happen_before: props.endDate,
+          happen_after: dayjs(props.startDate).startOf('day').toISOString(),
+          happen_before: dayjs(props.endDate).endOf('day').toISOString(),
           kind: kind.value,
           group_by: 'tag_id'
         },
-        { _mock: 'itemSummary', _autoLoading: true }
+        {
+          _mock: 'itemSummary'
+        }
       )
       data2.value = response.data.groups
     }

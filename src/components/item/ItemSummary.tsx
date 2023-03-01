@@ -1,6 +1,7 @@
-import { defineComponent, PropType, reactive, watch } from 'vue'
+import { defineComponent, onMounted, onUnmounted, PropType, reactive, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAfterMe } from '../../hook/useAfterMe'
+
 import { Button } from '../../shared/Button'
 import { Center } from '../../shared/Center'
 import { Datetime } from '../../shared/Datetime'
@@ -9,6 +10,7 @@ import { http } from '../../shared/Http'
 import { Icon } from '../../shared/Icon'
 import { Money } from '../../shared/Money'
 import { useItemStore } from '../../stores/useItemStore'
+import { useMeStore } from '../../stores/useMeStore'
 import s from './ItemSummary.module.scss'
 export const ItemSummary = defineComponent({
   props: {
@@ -45,8 +47,8 @@ export const ItemSummary = defineComponent({
       const response = await http.get(
         '/items/balance',
         {
-          happen_after: props.startDate,
-          happen_before: props.endDate
+          happen_after: dayjs(props.startDate).startOf('day').toISOString(),
+          happen_before: dayjs(props.endDate).endOf('day').toISOString()
         },
         {
           _mock: 'itemIndexBalance'

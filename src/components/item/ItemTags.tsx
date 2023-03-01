@@ -1,57 +1,52 @@
-import { defineComponent, onMounted, PropType, ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { Button } from '../../shared/Button'
-import { http } from '../../shared/Http'
-import { Icon } from '../../shared/Icon'
-import { useTags } from '../../shared/useTags'
-import s from './Tags.module.scss'
+import { defineComponent, PropType, ref } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+import { Button } from '../../shared/Button';
+import { http } from '../../shared/Http';
+import { Icon } from '../../shared/Icon';
+import { useTags } from '../../shared/useTags';
+import s from './Tags.module.scss';
 export const ItemTags = defineComponent({
   props: {
     kind: {
       type: String as PropType<string>,
-      required: true
+      required: true,
     },
-    selected: {
-      type: Number as PropType<number>
-    }
+    selected: Number,
   },
   emits: ['update:selected'],
-  setup(props, context) {
-    const { tags, hasMore, fetchTags } = useTags((page) => {
-      return http.get<Rescources<Tag>>(
-        '/tags',
-        {
-          kind: props.kind,
-          page: page + 1
-        },
-        { _mock: 'tagIndex', _autoLoading: true }
-      )
-    })
+  setup: (props, context) => {
+    const { tags, hasMore, page, fetchTags } = useTags((page) => {
+      return http.get<Rescources<Tag>>('/tags', {
+        kind: props.kind,
+        page: page + 1,
+      }, {
+        _mock: 'tagIndex',
+        _autoLoading: true,
+      });
+    });
     const onSelect = (tag: Tag) => {
-      context.emit('update:selected', tag.id)
-    }
+      context.emit('update:selected', tag.id);
+    };
     const timer = ref<number>()
     const currentTag = ref<HTMLDivElement>()
-    document.addEventListener('contextmenu', (e) => e.preventDefault()) // 禁用右键菜单
+
     const router = useRouter()
     const onLongPress = (tagId: Tag['id']) => {
-      router.push(`/tags/${tagId}/edit?kind=${props.kind}&return_to=${router.currentRoute.value.fullPath}`)
+      router.push(`/tags/${tagId}/edit?kind=${props.kind}`)
     }
     const onTouchStart = (e: TouchEvent, tag: Tag) => {
-      currentTag.value = e.target as HTMLDivElement
-      timer.value = window.setTimeout(() => {
+      currentTag.value = e.currentTarget as HTMLDivElement
+      timer.value = setTimeout(() => {
         onLongPress(tag.id)
       }, 500)
     }
     const onTouchEnd = (e: TouchEvent) => {
-      if (timer.value) {
-        clearTimeout(timer.value)
-      }
+      clearTimeout(timer.value)
     }
     const onTouchMove = (e: TouchEvent) => {
-      const pointElement = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY) // 获取当前触摸点的元素
-      if (currentTag.value !== pointElement && currentTag.value?.contains(pointElement) === false) {
-        // 如果当前触摸点的元素不是当前元素，且不是当前元素的子元素
+      const pointedElement = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+      if (currentTag.value !== pointedElement &&
+        currentTag.value?.contains(pointedElement) === false) {
         clearTimeout(timer.value)
       }
     }
@@ -77,9 +72,15 @@ export const ItemTags = defineComponent({
           ))}
         </div>
         <div class={s.more}>
-          {hasMore.value ? <Button onClick={fetchTags}>加载更多~</Button> : <span>没有更多了</span>}
+          {hasMore.value ? (
+            <Button class={s.loadMore} onClick={fetchTags}>
+              加载更多
+            </Button>
+          ) : (
+            <span class={s.noMore}>没有更多</span>
+          )}
         </div>
       </>
-    )
-  }
-})
+    );
+  },
+});

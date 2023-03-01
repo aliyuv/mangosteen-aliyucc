@@ -106,7 +106,7 @@ export const FormItem = defineComponent({
                   type="date"
                   title="选择年月日"
                   onConfirm={(value: Date) => {
-                    context.emit('update:modelValue', new Time(value).format())
+                    context.emit('update:modelValue', dayjs(value).format('YYYY-MM-DD'))
                     refDateVisible.value = false
                   }}
                 />

@@ -26,8 +26,8 @@ export const useItemStore = (id: string | (string | undefined)[]) =>
         const response = await http.get<Rescources<Item>>(
           '/items',
           {
-            happen_after: startDate,
-            happen_before: endDate,
+            happen_after: dayjs(startDate).startOf('day').toISOString(),
+            happen_before: dayjs(endDate).endOf('day').toISOString(),
             page: firstPage ? 1 : this.page + 1
           },
           {
