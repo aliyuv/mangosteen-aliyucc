@@ -1,8 +1,7 @@
 import { Dialog } from 'vant'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
-import { RouteLocationNormalizedLoaded, RouteLocationRaw, RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouteLocationRaw, RouterLink, useRoute, useRouter } from 'vue-router'
 import { useMeStore } from '../stores/useMeStore'
-import { useRouteStore } from '../stores/useRouteStore'
 import { Icon } from './Icon'
 import s from './Overlay.module.scss'
 
@@ -20,21 +19,27 @@ export const Overlay = defineComponent({
       props.onClose?.()
       // context.emit("close") // 这里的close是父组件 onclose的函数
     }
-    /*----------------------------------------------*/
-    const router = useRouter()
-    const routeStore = useRouteStore()
-    const navigateTo = (path: any) => {
-      if (route.path === path) {
-        Dialog.alert({
-          message: '您已经在当前页面'
-        })
-      } else {
-        router.push(path)
-        routeStore.setCurrentRoute(route.fullPath)
-      }
-    }
 
     /*----------------------------------------------*/
+    const router = useRouter()
+    const isDialogOpen = ref(false);
+    const navigateTo = (route: RouteLocationRaw) => {
+      if (router.currentRoute.value.path === route) {
+        if (!isDialogOpen.value) {
+          isDialogOpen.value = true;
+          Dialog.alert({
+            title: '提示',
+            message: '您已经在当前页面'
+          }).then(() => {
+            isDialogOpen.value = false;
+          })
+        }
+      } else {
+        router.push(route)
+      }
+    }
+    /*----------------------------------------------*/
+
     onMounted(async () => {
       const response = await meStore.mePromise
       me.value = response?.data.resource
@@ -67,16 +72,20 @@ export const Overlay = defineComponent({
           <nav>
             <ul class={s.action_list}>
               <li onClick={() => navigateTo('/items')}>
-                <RouterLink to="/items" class={s.action} exactActiveClass={s.exactActiveClass}>
+                {/* <RouterLink to="/items" class={s.action} exactActiveClass={s.exactActiveClass}> */}
+                <div class={s.action}>
                   <Icon name="pig" class={s.icon} />
                   <span>开始记账</span>
-                </RouterLink>
+                </div>
+                {/* </RouterLink> */}
               </li>
               <li onClick={() => navigateTo('/statistics')}>
-                <RouterLink to="/statistics" class={s.action} exactActiveClass={s.exactActiveClass}>
+                {/* <RouterLink to="/statistics" class={s.action} exactActiveClass={s.exactActiveClass}> */}
+                <div class={s.action} >
                   <Icon name="chart" class={s.icon} />
                   <span>统计图表</span>
-                </RouterLink>
+                </div>
+                {/* </RouterLink> */}
               </li>
               <li>
                 <RouterLink to="/export" class={s.action} exactActiveClass={s.exactActiveClass}>
