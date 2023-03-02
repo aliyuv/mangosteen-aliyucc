@@ -62,6 +62,7 @@ export const Charts = defineComponent({
     }
     onMounted(fetchData1)
     watch(() => kind.value, fetchData1)
+    watch(() => [props.startDate, props.endDate], fetchData1)
 
     const data2 = ref<Data2>([])
     const betterData2 = computed<{ name: string; value: number }[]>(() =>
