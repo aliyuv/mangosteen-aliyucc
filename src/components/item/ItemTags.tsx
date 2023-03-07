@@ -1,32 +1,36 @@
-import { defineComponent, PropType, ref } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
-import { Button } from '../../shared/Button';
-import { http } from '../../shared/Http';
-import { Icon } from '../../shared/Icon';
-import { useTags } from '../../shared/useTags';
-import s from './Tags.module.scss';
+import { defineComponent, PropType, ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { Button } from '../../shared/Button'
+import { http } from '../../shared/Http'
+import { Icon } from '../../shared/Icon'
+import { useTags } from '../../shared/useTags'
+import s from './Tags.module.scss'
 export const ItemTags = defineComponent({
   props: {
     kind: {
       type: String as PropType<string>,
-      required: true,
+      required: true
     },
-    selected: Number,
+    selected: Number
   },
   emits: ['update:selected'],
   setup: (props, context) => {
     const { tags, hasMore, page, fetchTags } = useTags((page) => {
-      return http.get<Rescources<Tag>>('/tags', {
-        kind: props.kind,
-        page: page + 1,
-      }, {
-        _mock: 'tagIndex',
-        _autoLoading: true,
-      });
-    });
+      return http.get<Rescources<Tag>>(
+        '/tags',
+        {
+          kind: props.kind,
+          page: page + 1
+        },
+        {
+          _mock: 'tagIndex',
+          _autoLoading: true
+        }
+      )
+    })
     const onSelect = (tag: Tag) => {
-      context.emit('update:selected', tag.id);
-    };
+      context.emit('update:selected', tag.id)
+    }
     const timer = ref<number>()
     const currentTag = ref<HTMLDivElement>()
 
@@ -45,8 +49,7 @@ export const ItemTags = defineComponent({
     }
     const onTouchMove = (e: TouchEvent) => {
       const pointedElement = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
-      if (currentTag.value !== pointedElement &&
-        currentTag.value?.contains(pointedElement) === false) {
+      if (currentTag.value !== pointedElement && currentTag.value?.contains(pointedElement) === false) {
         clearTimeout(timer.value)
       }
     }
@@ -81,6 +84,6 @@ export const ItemTags = defineComponent({
           )}
         </div>
       </>
-    );
-  },
-});
+    )
+  }
+})

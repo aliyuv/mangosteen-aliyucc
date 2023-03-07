@@ -6,10 +6,10 @@ import { Tab, Tabs } from '../shared/Tabs'
 import { Time } from '../shared/time'
 import s from '../Layouts/TimeTabsLayOut.module.scss'
 import { MainLayout } from './MainLayout'
-import utc from 'dayjs/plugin/utc';
+import utc from 'dayjs/plugin/utc'
 import dayjs from 'dayjs'
 
-dayjs.extend(utc);
+dayjs.extend(utc)
 const demo = defineComponent({
   props: {
     startDate: {
