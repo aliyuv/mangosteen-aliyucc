@@ -110,6 +110,7 @@ export const FormItem = defineComponent({
                     context.emit('update:modelValue', dayjs(value).format('YYYY-MM-DD'))
                     refDateVisible.value = false
                   }}
+                  onCancel={() => refDateVisible.value = false}
                 />
               </Popup>
             </>
