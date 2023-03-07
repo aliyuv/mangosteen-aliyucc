@@ -27,17 +27,12 @@ export const Overlay = defineComponent({
       if (router.currentRoute.value.path === route) {
         if (!isDialogOpen.value) {
           isDialogOpen.value = true;
-          // Dialog.alert({
-          //   title: '提示',
-          //   message: '您已经在当前页面'
-          // }).then(() => {
-          //   isDialogOpen.value = false;
-          // })
-          Toast({
-            message: '您已经在当前页面',
-            forbidClick: true,
+          Dialog.alert({
+            title: '提示',
+            message: '您已经在当前页面'
+          }).then(() => {
+            isDialogOpen.value = false;
           })
-          isDialogOpen.value = false;
         }
       } else {
         router.push(route)
@@ -53,9 +48,10 @@ export const Overlay = defineComponent({
       await Dialog.confirm({
         title: '确认退出登录吗？',
         message: '退出登录后将无法同步数据'
-      })
-      localStorage.removeItem('jwt')
-      window.location.reload()
+      }).then(() => {
+        localStorage.removeItem('jwt')
+        window.location.reload()
+      }).catch(() => { return })
     }
     return () => (
       <>
