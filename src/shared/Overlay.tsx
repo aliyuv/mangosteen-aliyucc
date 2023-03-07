@@ -1,4 +1,4 @@
-import { Dialog } from 'vant'
+import { Dialog, Toast } from 'vant'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
 import { RouteLocationRaw, RouterLink, useRoute, useRouter } from 'vue-router'
 import { useMeStore } from '../stores/useMeStore'
@@ -27,12 +27,17 @@ export const Overlay = defineComponent({
       if (router.currentRoute.value.path === route) {
         if (!isDialogOpen.value) {
           isDialogOpen.value = true;
-          Dialog.alert({
-            title: '提示',
-            message: '您已经在当前页面'
-          }).then(() => {
-            isDialogOpen.value = false;
+          // Dialog.alert({
+          //   title: '提示',
+          //   message: '您已经在当前页面'
+          // }).then(() => {
+          //   isDialogOpen.value = false;
+          // })
+          Toast({
+            message: '您已经在当前页面',
+            forbidClick: true,
           })
+          isDialogOpen.value = false;
         }
       } else {
         router.push(route)
